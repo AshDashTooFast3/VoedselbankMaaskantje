@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Pakket;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PakkettenController extends Controller
@@ -45,9 +45,23 @@ class PakkettenController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $details = Pakket::getPakketDetails($id);
+
+        // Als het gezin niet bestaat of geen pakketten heeft, vangen we dat op
+        if (empty($details)) {
+            return redirect()->back()->with('error', 'Geen gegevens gevonden.');
+        }
+
+        // We pakken de algemene gezinsinfo uit de eerste rij van het resultaat
+        $gezinInfo = (object) [
+            'Naam' => $details[0]->Naam,
+            'Omschrijving' => $details[0]->Omschrijving,
+            'TotaalAantalPersonen' => $details[0]->TotaalAantalPersonen,
+        ];
+
+        return view('pakketten.show', compact('details', 'gezinInfo'));
     }
 
     /**

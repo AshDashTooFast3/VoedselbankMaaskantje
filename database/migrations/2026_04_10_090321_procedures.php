@@ -8,6 +8,8 @@ return new class extends Migration
     public function up(): void
     {
         DB::unprepared("DROP PROCEDURE IF EXISTS getAllPakketten");
+        DB::unprepared("DROP PROCEDURE IF EXISTS getPakketDetailsByGezin");
+        DB::unprepared("DROP PROCEDURE IF EXISTS updatePakketStatus");
 
         DB::unprepared(<<<'SQL'
             CREATE PROCEDURE getAllPakketten(IN p_EetwensId INT)
@@ -44,10 +46,47 @@ return new class extends Migration
                 ORDER BY g.Naam ASC;
             END
         SQL);
+
+        DB::unprepared(<<<'SQL'
+            CREATE PROCEDURE getPakketDetailsByGezin(IN p_GezinId INT)
+            BEGIN
+                SELECT
+                    g.Naam,
+                    g.Omschrijving,
+                    g.TotaalAantalPersonen,
+                    vp.PakketNummer,
+                    vp.DatumSamenstelling,
+                    vp.DatumUitgifte,
+                    vp.Status,
+                    (
+                        SELECT COUNT(*)
+                        FROM ProductPerVoedselpakket ppv
+                        WHERE ppv.VoedselpakketId = vp.Id
+                    ) AS AantalProducten
+                FROM Gezin g
+                LEFT JOIN Voedselpakket vp ON g.Id = vp.GezinId
+                WHERE g.Id = p_GezinId
+                ORDER BY vp.DatumSamenstelling DESC;
+            END
+        SQL);
+
+        DB::unprepared(<<<'SQL'
+            CREATE PROCEDURE updatePakketStatus(
+                IN p_PakketNummer INT,
+                IN p_NieuweStatus VARCHAR(50)
+            )
+            BEGIN
+                UPDATE Voedselpakket
+                SET Status = p_NieuweStatus
+                WHERE PakketNummer = p_PakketNummer;
+            END
+        SQL);
     }
 
     public function down(): void
     {
         DB::unprepared("DROP PROCEDURE IF EXISTS getAllPakketten");
+        DB::unprepared("DROP PROCEDURE IF EXISTS getPakketDetailsByGezin");
+        DB::unprepared("DROP PROCEDURE IF EXISTS updatePakketStatus");
     }
 };

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Support\Facades\DB;
-use PDO;
 
 class Pakket
 {
@@ -14,6 +13,11 @@ class Pakket
     public static function getAllPakketten($eetwensId = 0)
     {
         // We gebruiken de DB facade om de procedure aan te roepen met de parameter
-        return DB::select("CALL getAllPakketten(?)", [$eetwensId]);
+        return DB::select('CALL getAllPakketten(?)', [$eetwensId]);
+    }
+
+    public static function getPakketDetails($gezinId)
+    {
+        return DB::select('CALL getPakketDetailsByGezin(?)', [$gezinId]);
     }
 }

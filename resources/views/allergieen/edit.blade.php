@@ -28,7 +28,7 @@
             </select>
 
             @if (session('success'))
-                <div class="alert alert-info">
+                <div class="alert alert-success">
                     {{ session('success') }}
                     <meta http-equiv="refresh" content="3;url={{ route('allergie.show', $gezinId) }}">
                 </div>

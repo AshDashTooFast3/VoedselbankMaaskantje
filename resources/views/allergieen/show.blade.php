@@ -18,22 +18,28 @@
         {{-- Gezin info blok --}}
         <table class="table table-bordered w-auto mb-4">
             <tbody>
-                @forelse ($gezin as $info)
+                @php
+                    // Pak de eerste record uit de gezin collectie voor gezinsgegevens
+                    $gezinInfo = collect($gezin)->first();
+                @endphp
+                @if($gezinInfo)
                     <tr>
                         <td class="fw-semibold">Gezinsnaam:</td>
-                        <td>{{ $info->Naam }}</td>
+                        <td>{{ $gezinInfo->Naam }}</td>
                     </tr>
                     <tr>
                         <td class="fw-semibold">Omschrijving:</td>
-                        <td>{{ $info->Omschrijving }}</td>
+                        <td>{{ $gezinInfo->Omschrijving }}</td>
                     </tr>
                     <tr>
                         <td class="fw-semibold">Totaal aantal Personen:</td>
-                        <td>{{ $info->TotaalPersonen }}</td>
+                        <td>{{ $gezinInfo->TotaalPersonen }}</td>
                     </tr>
-                @empty
-                    
-                @endforelse
+                @else
+                    <tr>
+                        <td colspan="2" class="text-center text-muted">Geen gezinsgegevens beschikbaar</td>
+                    </tr>
+                @endif
             </tbody>
         </table>
 

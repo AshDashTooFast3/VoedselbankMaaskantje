@@ -22,6 +22,12 @@ return new class extends Migration
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_getLeverancierProductVoorWijzigen');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_updateProductHoudbaarheidsdatum');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_updateLeverancier');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_getAllAllergies');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_getAllergiesInFamily');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_getAllergyById');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_getAllFamilies');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_getAllFamiliesBySelectedAllergy');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_updateAllergy');
 
         // Pakketten-procedures (US pakketten-overzicht + details + statuswijziging).
         DB::unprepared(<<<'SQL'
@@ -365,6 +371,116 @@ BEGIN
     END IF;
 END
 SQL);
+
+        // Allergie-procedures (allergie-overzicht + details + wijziging).
+        DB::unprepared(<<<'SQL'
+            CREATE PROCEDURE sp_getAllAllergies()
+            BEGIN
+            SELECT 
+                Id,
+                Naam
+            FROM Allergie;
+            END
+        SQL);
+
+        DB::unprepared(<<<'SQL'
+            CREATE PROCEDURE sp_getAllergiesInFamily(IN p_GezinId INT)
+            BEGIN
+            SELECT 
+                a.Id AS AllergieId,
+                g.Id AS GezinId,
+                CONCAT_WS(' ', p.Voornaam, p.Tussenvoegsel, p.Achternaam) AS Naam,
+                p.TypePersoon,
+                p.IsVertegenwoordiger,
+                a.Naam AS Allergie,
+                pa.AllergieId,
+                p.Id AS PersoonId,
+                g.Naam AS GezinsNaam,
+                g.Omschrijving,
+                (SELECT COUNT(*) FROM Persoon WHERE GezinId = p_GezinId) AS TotaalPersonen
+            FROM Persoon p
+            LEFT JOIN AllergiePerPersoon pa ON p.Id = pa.PersoonId
+            LEFT JOIN Allergie a ON pa.AllergieId = a.Id
+            JOIN Gezin g ON p.GezinId = g.Id
+            WHERE p.GezinId = p_GezinId;
+            END
+        SQL);
+
+        DB::unprepared(<<<'SQL'
+            CREATE PROCEDURE sp_getAllergyById(IN p_PersoonId INT)
+            BEGIN
+            SELECT 
+                a.Id AS AllergieId,
+                a.Naam
+            FROM Allergie a
+            INNER JOIN AllergiePerPersoon app ON a.Id = app.AllergieId
+            WHERE app.PersoonId = p_PersoonId;
+            END
+        SQL);
+
+        DB::unprepared(<<<'SQL'
+            CREATE PROCEDURE sp_getAllFamilies()
+            BEGIN
+            SELECT
+                g.Id AS GezinId,
+                a.Id AS AllergieId,
+                p.Id AS PersoonId,
+                g.Naam,
+                g.Omschrijving,
+                g.AantalVolwassenen,
+                g.AantalKinderen,
+                g.AantalBabys,
+                p.IsVertegenwoordiger
+            FROM Gezin g
+            INNER JOIN Persoon p ON g.Id = p.GezinId
+            INNER JOIN AllergiePerPersoon ap ON p.Id = ap.PersoonId
+            INNER JOIN Allergie a ON ap.AllergieId = a.Id;
+            END
+        SQL);
+
+        DB::unprepared(<<<'SQL'
+            CREATE PROCEDURE sp_getAllFamiliesBySelectedAllergy(IN p_AllergieId INT)
+            BEGIN
+            SELECT
+                g.Id AS GezinId,
+                a.Id AS AllergieId,
+                g.Naam,
+                g.Omschrijving,
+                g.AantalVolwassenen,
+                g.AantalKinderen,
+                g.AantalBabys,
+                p.IsVertegenwoordiger
+            FROM Gezin g
+            INNER JOIN Persoon p ON g.Id = p.GezinId
+            INNER JOIN AllergiePerPersoon ap ON p.Id = ap.PersoonId
+            INNER JOIN Allergie a ON ap.AllergieId = a.Id
+            WHERE a.Id = p_AllergieId;
+            END
+        SQL);
+
+        DB::unprepared(<<<'SQL'
+            CREATE PROCEDURE sp_updateAllergy(
+            IN p_PersoonId INT,
+            IN p_AllergieId INT,
+            IN p_GezinId INT
+            )
+            BEGIN
+            DECLARE v_Count INT;
+            SELECT COUNT(*) INTO v_Count
+            FROM AllergiePerPersoon
+            WHERE PersoonId = p_PersoonId;
+
+            IF v_Count > 0 THEN
+                UPDATE AllergiePerPersoon
+                SET AllergieId = p_AllergieId
+                WHERE PersoonId = p_PersoonId;
+            ELSE
+                INSERT INTO AllergiePerPersoon (PersoonId, AllergieId, GezinId)
+                VALUES (p_PersoonId, p_AllergieId, p_GezinId);
+            END IF;
+            END
+        SQL);
+
     }
 
     public function down(): void

@@ -1,32 +1,42 @@
+USE VoedselbankMaaskantje;
+
+DROP PROCEDURE IF EXISTS getAllPakketten;
+
 DELIMITER //
 
-CREATE PROCEDURE getAllPakketten()
+CREATE PROCEDURE getAllPakketten(IN p_EetwensId INT)
 BEGIN
     SELECT 
-        g.Code AS GezinCode,
-        g.Naam AS GezinNaam,
+        g.Naam AS Gezinsnaam,
+        g.Omschrijving,
+        g.AantalVolwassenen AS Volwassenen,
+        g.AantalKinderen AS Kinderen,
+        g.AantalBabys AS Babys,
+        CONCAT(p.Voornaam, ' ', IFNULL(p.Tussenvoegsel, ''), ' ', p.Achternaam) AS Vertegenwoordiger,
+        ew.Naam AS Eetwens,
         vp.PakketNummer,
-        vp.DatumSamenstelling,
-        vp.DatumUitgifte,
-        vp.Status AS PakketStatus,
-        COUNT(ppv.ProductId) AS AantalVerschillendeProducten,
-        IFNULL(SUM(ppv.AantalProductEenheden), 0) AS TotaalProductEenheden
+        vp.Status AS PakketStatus
     FROM Voedselpakket vp
-    -- Join 1: Koppel het voedselpakket aan het bijbehorende gezin
-    INNER JOIN Gezin g 
-        ON vp.GezinId = g.Id
-    -- Join 2: Haal de productregels van het pakket op (LEFT JOIN voor lege pakketten)
-    LEFT JOIN ProductPerVoedselpakket ppv 
-        ON vp.Id = ppv.VoedselpakketId
-    -- Join 3: Koppel aan de producttabel om te valideren dat het product bestaat
-    LEFT JOIN Product pr 
-        ON ppv.ProductId = pr.Id
+    INNER JOIN Gezin g ON vp.GezinId = g.Id
+    INNER JOIN Persoon p ON g.Id = p.GezinId AND p.IsVertegenwoordiger = 1
+    LEFT JOIN EetwensPerGezin epg ON g.Id = epg.GezinId
+    LEFT JOIN Eetwens ew ON epg.EetwensId = ew.Id
+    WHERE (p_EetwensId IS NULL OR p_EetwensId = 0 OR ew.Id = p_EetwensId)
+    -- Alle niet-geaggregeerde kolommen hier toevoegen:
     GROUP BY 
-        g.Id, 
-        vp.Id
-    ORDER BY 
-        vp.DatumSamenstelling DESC, 
-        g.Naam ASC;
+        vp.Id, 
+        g.Naam, 
+        g.Omschrijving, 
+        g.AantalVolwassenen, 
+        g.AantalKinderen, 
+        g.AantalBabys, 
+        p.Voornaam, 
+        p.Tussenvoegsel, 
+        p.Achternaam, 
+        ew.Naam, 
+        vp.PakketNummer, 
+        vp.Status
+    ORDER BY g.Naam ASC;
 END //
 
 DELIMITER ;

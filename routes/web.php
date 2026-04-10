@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AllergieenController;
 use App\Http\Controllers\PakkettenController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,7 +21,7 @@ Route::middleware('auth')->group(function () {
 
 Route::resource('pakketten', PakkettenController::class);
 
+Route::get('/allergieen', [AllergieenController::class, 'index'])->name('allergieen.index')
+->middleware('role:manager');
 
 require __DIR__.'/auth.php';
-
-

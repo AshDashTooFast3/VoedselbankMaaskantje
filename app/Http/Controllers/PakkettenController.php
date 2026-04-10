@@ -67,17 +67,62 @@ class PakkettenController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    /**
+     * Toon het formulier om de status te wijzigen.
+     */
+    /**
+     * SHOW: Toon het formulier om de status te wijzigen
+     */
+    public function edit($id) // Laravel vult hier het PakketNummer in
     {
-        //
+        // Gebruik de nieuwe model functie (zie stap 2)
+        $pakket = Pakket::getPakketByNummer($id);
+
+        if (! $pakket) {
+            return redirect()->route('pakketten.index')->with('error', 'Pakket niet gevonden.');
+        }
+
+        $statussen = ['Niet Uitgereikt', 'In behandeling', 'Uitgereikt', 'Geannuleerd'];
+
+        return view('pakketten.edit', compact('pakket', 'statussen'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * UPDATE: Sla de wijziging daadwerkelijk op
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $nummer)
     {
-        //
+        $request->validate(['status' => 'required|string']);
+
+        $pakket = Pakket::getPakketByNummer($nummer);
+
+        if (! $pakket) {
+            return redirect()->route('pakketten.index')->with('error', 'Pakket niet gevonden.');
+        }
+
+        $isInactiefGezin = isset($pakket->IsActief) && (int) $pakket->IsActief === 0;
+
+        if ($isInactiefGezin) {
+            return redirect()->route('pakketten.edit', $nummer)->with([
+                'success' => 'Dit gezin is niet meer ingeschreven bij de voedselbank en daarom kan er geen voedselpakket worden uitgereikt',
+                'pakket_nummer' => $nummer,
+                'is_inactief_gezin' => true,
+                'redirect_to' => isset($pakket->GezinId)
+                    ? route('pakketten.show', $pakket->GezinId)
+                    : route('pakketten.index'),
+            ]);
+        }
+
+        Pakket::updateStatus($nummer, $request->status);
+
+        return redirect()->route('pakketten.edit', $nummer)->with([
+            'success' => 'De wijziging is doorgevoerd',
+            'pakket_nummer' => $nummer,
+            'is_inactief_gezin' => false,
+            'redirect_to' => isset($pakket->GezinId)
+                ? route('pakketten.show', $pakket->GezinId)
+                : route('pakketten.index'),
+        ]);
     }
 
     /**

@@ -20,4 +20,17 @@ class Pakket
     {
         return DB::select('CALL getPakketDetailsByGezin(?)', [$gezinId]);
     }
+
+    public static function updateStatus($nummer, $status)
+    {
+        // Gebruik statement voor updates via een Stored Procedure
+        return DB::statement('CALL updatePakketStatus(?, ?)', [$nummer, $status]);
+    }
+
+    public static function getPakketByNummer($nummer)
+    {
+        $result = DB::select('CALL getPakketByNummer(?)', [$nummer]);
+
+        return $result[0] ?? null;
+    }
 }

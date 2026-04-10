@@ -10,6 +10,7 @@ return new class extends Migration
         DB::unprepared("DROP PROCEDURE IF EXISTS getAllPakketten");
         DB::unprepared("DROP PROCEDURE IF EXISTS getPakketDetailsByGezin");
         DB::unprepared("DROP PROCEDURE IF EXISTS updatePakketStatus");
+        DB::unprepared("DROP PROCEDURE IF EXISTS getPakketByNummer");
 
         DB::unprepared(<<<'SQL'
             CREATE PROCEDURE getAllPakketten(IN p_EetwensId INT)
@@ -76,9 +77,25 @@ return new class extends Migration
                 IN p_NieuweStatus VARCHAR(50)
             )
             BEGIN
-                UPDATE Voedselpakket
-                SET Status = p_NieuweStatus
-                WHERE PakketNummer = p_PakketNummer;
+                UPDATE Voedselpakket vp
+                INNER JOIN Gezin g ON g.Id = vp.GezinId
+                SET vp.Status = p_NieuweStatus
+                WHERE vp.PakketNummer = p_PakketNummer
+                  AND g.IsActief = 1;
+            END
+        SQL);
+
+        DB::unprepared(<<<'SQL'
+            CREATE PROCEDURE getPakketByNummer(IN p_PakketNummer INT)
+            BEGIN
+                SELECT
+                    vp.PakketNummer,
+                    vp.Status,
+                    vp.GezinId,
+                    g.IsActief
+                FROM Voedselpakket vp
+                LEFT JOIN Gezin g ON g.Id = vp.GezinId
+                WHERE vp.PakketNummer = p_PakketNummer;
             END
         SQL);
     }
@@ -88,5 +105,6 @@ return new class extends Migration
         DB::unprepared("DROP PROCEDURE IF EXISTS getAllPakketten");
         DB::unprepared("DROP PROCEDURE IF EXISTS getPakketDetailsByGezin");
         DB::unprepared("DROP PROCEDURE IF EXISTS updatePakketStatus");
+        DB::unprepared("DROP PROCEDURE IF EXISTS getPakketByNummer");
     }
 };

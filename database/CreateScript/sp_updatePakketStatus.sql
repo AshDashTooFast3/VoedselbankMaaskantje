@@ -9,10 +9,12 @@ CREATE PROCEDURE updatePakketStatus(
     IN p_NieuweStatus VARCHAR(50)
 )
 BEGIN
-    -- Update de status van het pakket gebaseerd op het unieke pakketnummer
-    UPDATE Voedselpakket 
-    SET Status = p_NieuweStatus 
-    WHERE PakketNummer = p_PakketNummer;
+    -- Alleen actieve gezinnen mogen een pakketstatuswijziging krijgen
+    UPDATE Voedselpakket vp
+    INNER JOIN Gezin g ON g.Id = vp.GezinId
+    SET vp.Status = p_NieuweStatus
+    WHERE vp.PakketNummer = p_PakketNummer
+      AND g.IsActief = 1;
 END //
 
 DELIMITER ;

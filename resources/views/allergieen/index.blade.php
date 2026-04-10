@@ -50,15 +50,16 @@
                         <td>{{ $gezin->AantalBabys }}</td>
                         <td>{{ $gezin->IsVertegenwoordiger ? 'Ja' : 'Nee' }}</td>
                         <td class="text-center">
-                            <a href="{{ route('allergie.show', $gezin->AllergieId) }}" class="text-primary fs-4">
+                            <a href="{{ route('allergie.show', $gezin->GezinId) }}" class="text-primary fs-4">
                                 <i class="bi bi-file-earmark-text"></i>
                             </a>
                         </td>
                     </tr>
                 @empty
-                <tr class="my-3">
-                    <td colspan="7" class="text-center bg-warning bg-opacity-25 text-dark p-3">Geen gezinnen gevonden</td>                    
-                </tr>
+                    <tr class="my-3">
+                        <td colspan="7" class="text-center bg-warning bg-opacity-25 text-dark p-3">Geen gezinnen gevonden
+                        </td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>

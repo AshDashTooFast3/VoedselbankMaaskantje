@@ -48,4 +48,19 @@ class Allergie extends Model
     {
         return DB::select('CALL sp_getAllAllergies()');
     }
+
+    public function getAllergiesInFamily($gezinId)
+    {
+        return DB::select('CALL sp_getAllergiesInFamily(?)', [$gezinId]);
+    }
+
+    public function getAllergyById($persoonId)
+    {
+        return DB::selectOne('CALL sp_getAllergyById(?)', [$persoonId]);
+    }
+
+    public function updateAllergy($persoonId, $allergieId, $gezinId)
+    {
+        DB::update('CALL sp_updateAllergy(?, ?, ?)', [$persoonId, $allergieId, $gezinId]);
+    }
 }

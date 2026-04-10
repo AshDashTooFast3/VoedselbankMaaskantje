@@ -7,8 +7,9 @@ DELIMITER $$
 CREATE PROCEDURE sp_getAllFamilies()
 BEGIN
     SELECT
-        g.Id,
+        g.Id AS GezinId,
         a.Id AS AllergieId,
+        p.Id AS PersoonId,
         g.Naam,
         g.Omschrijving,
         g.AantalVolwassenen,

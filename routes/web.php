@@ -47,6 +47,8 @@ Route::middleware(['auth', 'role:manager'])->group(function () {
 Route::middleware('role:manager')->group(function () {
     Route::get('/allergieen', [AllergieenController::class, 'index'])->name('allergieen.index');
     Route::get('/allergieen/{id}', [AllergieenController::class, 'show'])->name('allergie.show');
+    Route::get('/allergieen/{id}/edit', [AllergieenController::class, 'edit'])->name('allergie.edit');
+    Route::put('/allergieen/{id}', [AllergieenController::class, 'update'])->name('allergie.update');
 });
 
 require __DIR__.'/auth.php';

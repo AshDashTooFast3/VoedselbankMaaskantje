@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Klanten;
 use Illuminate\Http\Request;
 
 class KlantenController extends Controller
@@ -11,7 +12,11 @@ class KlantenController extends Controller
      */
     public function index()
     {
-        //
+        // Roep de SP aan via het model
+        $klanten = Klanten::getKlantenOverzicht();
+
+        // Stuur de data naar de view (bijv. resources/views/klanten/index.blade.php)
+        return view('klanten.index', compact('klanten'));
     }
 
     /**

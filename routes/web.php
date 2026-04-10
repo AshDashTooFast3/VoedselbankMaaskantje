@@ -3,6 +3,7 @@
 use App\Http\Controllers\AllergieenController;
 use App\Http\Controllers\PakkettenController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\KlantenController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,6 +21,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource('pakketten', PakkettenController::class);
+Route::get('/klanten', [KlantenController::class, 'index'])->name('klanten.index');
+Route::get('/klanten/{id}', [KlantenController::class, 'show'])->name('klanten.show');
+Route::get('/klanten/{id}/edit', [KlantenController::class, 'edit'])->name('klanten.edit');
+Route::put('/klanten/{id}', [KlantenController::class, 'update'])->name('klanten.update');
 
 Route::middleware('role:manager')->group(function () {
     Route::get('/allergieen', [AllergieenController::class, 'index'])->name('allergieen.index');

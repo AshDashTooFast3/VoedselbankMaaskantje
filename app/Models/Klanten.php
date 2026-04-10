@@ -22,4 +22,19 @@ class Klanten extends Model
     {
         return DB::table('Contact')->distinct()->pluck('Postcode');
     }
+
+    public static function getKlantDetails($id)
+    {
+        $result = DB::select('CALL sp_getKlantDetails(?)', [$id]);
+        return count($result) > 0 ? $result[0] : null;
+    }
+
+    public static function updateKlantContact($id, $data)
+    {
+        DB::statement('CALL sp_updateKlantContact(?, ?, ?, ?, ?, ?, ?, ?)', [
+            $id,
+            $data['Straatnaam'], $data['Huisnummer'], $data['Toevoeging'],
+            $data['Postcode'], $data['Woonplaats'], $data['Email'], $data['Mobiel']
+        ]);
+    }
 }

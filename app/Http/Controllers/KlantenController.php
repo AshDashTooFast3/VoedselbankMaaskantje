@@ -39,25 +39,41 @@ class KlantenController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $klant = Klanten::getKlantDetails($id);
+        return view('klanten.show', compact('klant'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $klant = Klanten::getKlantDetails($id);
+        return view('klanten.edit', compact('klant'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'Postcode' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $verkeerdePostcodes = ['1901CB', '1901 CB'];
+                    if (in_array(strtoupper($value), $verkeerdePostcodes)) {
+                        $fail('Deze postcode komt niet uit de regio Maaskantje');
+                    }
+                },
+            ],
+        ]);
+
+        Klanten::updateKlantContact($id, $request->all());
+
+        return redirect()->back()->with('success', 'De klantgegevens zijn gewijzigd');
     }
 
     /**

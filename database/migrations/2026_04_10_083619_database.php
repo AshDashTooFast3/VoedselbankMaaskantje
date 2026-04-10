@@ -322,6 +322,7 @@ return new class extends Migration
             ['Id' => 11, 'Straat' => 'Teefingenhof', 'Huisnummer' => 20, 'Toevoeging' => null, 'Postcode' => '5271TH', 'Woonplaats' => 'Maaskantje', 'Email' => 'j.pastorius@gmail.com', 'Mobiel' => '+31 623456356'],
             ['Id' => 12, 'Straat' => 'veldhoen', 'Huisnummer' => 31, 'Toevoeging' => null, 'Postcode' => '5271ZE', 'Woonplaats' => 'Maaskantje', 'Email' => 's.dollaard@gmail.com', 'Mobiel' => '+31 623452314'],
             ['Id' => 13, 'Straat' => 'ScheringaDreef', 'Huisnummer' => 37, 'Toevoeging' => null, 'Postcode' => '5271ZE', 'Woonplaats' => 'Vught', 'Email' => 'j.blokker@gemeentevught.nl', 'Mobiel' => '+31 623452314'],
+            ['Id' => 14, 'Straat' => 'Kerkstraat', 'Huisnummer' => 5, 'Toevoeging' => null, 'Postcode' => '5271AA', 'Woonplaats' => 'Maaskantje', 'Email' => 'jan.vanderheijden@gmail.com', 'Mobiel' => '+31 623450005'],
         ]);
 
         Schema::create('ContactPerGezin', function (Blueprint $table) {
@@ -363,7 +364,6 @@ return new class extends Migration
             ['Id' => 2, 'Naam' => 'Albertus Kerk', 'Contactpersoon' => 'Leo Pastor', 'LeverancierNummer' => 'L0002', 'LeverancierType' => 'Instelling'],
             ['Id' => 3, 'Naam' => 'Gemeente Utrecht', 'Contactpersoon' => 'Mohammed Yazidi', 'LeverancierNummer' => 'L0003', 'LeverancierType' => 'Overheid'],
             ['Id' => 4, 'Naam' => 'Boerderij Meerhoven', 'Contactpersoon' => 'Bertus van Driel', 'LeverancierNummer' => 'L0004', 'LeverancierType' => 'Particulier'],
-            ['Id' => 5, 'Naam' => 'Jan van der Heijden', 'Contactpersoon' => 'Jan van der Heijden', 'LeverancierNummer' => 'L0005', 'LeverancierType' => 'Donor'],
             ['Id' => 6, 'Naam' => 'Vomar', 'Contactpersoon' => 'Jaco Pastorius', 'LeverancierNummer' => 'L0006', 'LeverancierType' => 'Bedrijf'],
             ['Id' => 7, 'Naam' => 'DekaMarkt', 'Contactpersoon' => 'Sil den Dollaard', 'LeverancierNummer' => 'L0007', 'LeverancierType' => 'Bedrijf'],
             ['Id' => 8, 'Naam' => 'Gemeente Vught', 'Contactpersoon' => 'Jan Blokker', 'LeverancierNummer' => 'L0008', 'LeverancierType' => 'Overheid'],
@@ -387,9 +387,9 @@ return new class extends Migration
             ['Id' => 2, 'LeverancierId' => 2, 'ContactId' => 8],
             ['Id' => 3, 'LeverancierId' => 3, 'ContactId' => 9],
             ['Id' => 4, 'LeverancierId' => 4, 'ContactId' => 10],
-            ['Id' => 5, 'LeverancierId' => 6, 'ContactId' => 11],
-            ['Id' => 6, 'LeverancierId' => 7, 'ContactId' => 12],
-            ['Id' => 7, 'LeverancierId' => 8, 'ContactId' => 13],
+            ['Id' => 6, 'LeverancierId' => 6, 'ContactId' => 11],
+            ['Id' => 7, 'LeverancierId' => 7, 'ContactId' => 12],
+            ['Id' => 8, 'LeverancierId' => 8, 'ContactId' => 13],
         ]);
 
         Schema::create('Magazijn', function (Blueprint $table) {

@@ -25,7 +25,7 @@
                         <option value="{{ $type }}" {{ $selectedType === $type ? 'selected' : '' }}>{{ $type }}</option>
                     @endforeach
                 </select>
-                <button type="submit" class="btn btn-secondary">Toon Leveranciers</button>
+                <button type="submit" class="btn btn-secondary text-nowrap">Toon Leveranciers</button>
             </form>
         </div>
 
@@ -47,8 +47,8 @@
                         <tr>
                             <td>{{ $leverancier->Naam }}</td>
                             <td>{{ $leverancier->Contactpersoon }}</td>
-                            <td>{{ $leverancier->Email }}</td>
-                            <td>{{ $leverancier->Mobiel }}</td>
+                            <td>{{ $leverancier->Email ?: 'Geen e-mailadres bekend' }}</td>
+                            <td>{{ $leverancier->Mobiel ?: 'Geen mobiel bekend' }}</td>
                             <td>{{ $leverancier->LeverancierNummer }}</td>
                             <td>{{ $leverancier->LeverancierType }}</td>
                             <td class="text-center">

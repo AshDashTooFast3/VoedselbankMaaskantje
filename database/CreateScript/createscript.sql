@@ -375,7 +375,6 @@ INSERT INTO Leverancier (Id, Naam, Contactpersoon, LeverancierNummer, Leverancie
 (2, 'Albertus Kerk', 'Leo Pastor', 'L0002', 'Instelling'),
 (3, 'Gemeente Utrecht', 'Mohammed Yazidi', 'L0003', 'Overheid'),
 (4, 'Boerderij Meerhoven', 'Bertus van Driel', 'L0004', 'Particulier'),
-(5, 'Jan van der Heijden', 'Jan van der Heijden', 'L0005', 'Donor'),
 (6, 'Vomar', 'Jaco Pastorius', 'L0006', 'Bedrijf'),
 (7, 'DekaMarkt', 'Sil den Dollaard', 'L0007', 'Bedrijf'),
 (8, 'Gemeente Vught', 'Jan Blokker', 'L0008', 'Overheid');

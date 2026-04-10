@@ -3,3 +3,4 @@
 <a href="{{ route('allergieen.index') }}">Overzicht Allergieën</a>
 <a href="{{ route('pakketten.index') }}">Overzicht Voedselpakketten</a>
 <a href="{{ route('klanten.index') }}">Overzicht Klanten</a>
+<a href="{{ route('leveranciers.index') }}">Overzicht Leveranciers</a>

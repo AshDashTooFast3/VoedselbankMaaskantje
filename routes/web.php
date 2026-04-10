@@ -4,6 +4,7 @@ use App\Http\Controllers\AllergieenController;
 use App\Http\Controllers\PakkettenController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KlantenController;
+use App\Http\Controllers\LeverancierController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,6 +26,12 @@ Route::get('/klanten', [KlantenController::class, 'index'])->name('klanten.index
 Route::get('/klanten/{id}', [KlantenController::class, 'show'])->name('klanten.show');
 Route::get('/klanten/{id}/edit', [KlantenController::class, 'edit'])->name('klanten.edit');
 Route::put('/klanten/{id}', [KlantenController::class, 'update'])->name('klanten.update');
+Route::middleware('auth')->group(function () {
+    Route::get('/leveranciers', [LeverancierController::class, 'index'])->name('leveranciers.index');
+    Route::get('/leveranciers/{id}', [LeverancierController::class, 'show'])->whereNumber('id')->name('leveranciers.show');
+    Route::get('/leveranciers/{id}/edit', [LeverancierController::class, 'edit'])->whereNumber('id')->name('leveranciers.edit');
+    Route::put('/leveranciers/{id}', [LeverancierController::class, 'update'])->whereNumber('id')->name('leveranciers.update');
+});
 
 Route::middleware('role:manager')->group(function () {
     Route::get('/allergieen', [AllergieenController::class, 'index'])->name('allergieen.index');

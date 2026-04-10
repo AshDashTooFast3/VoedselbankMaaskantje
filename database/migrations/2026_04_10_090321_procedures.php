@@ -5,74 +5,114 @@ use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        DB::unprepared('USE VoedselbankMaaskantje');
-
         DB::unprepared('DROP PROCEDURE IF EXISTS getAllPakketten');
+        DB::unprepared('DROP PROCEDURE IF EXISTS getPakketDetailsByGezin');
+        DB::unprepared('DROP PROCEDURE IF EXISTS updatePakketStatus');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_getAllKlanten');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_getKlantDetails');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_updateKlantContact');
 
         DB::unprepared(<<<'SQL'
-CREATE PROCEDURE getAllPakketten()
+CREATE PROCEDURE getAllPakketten(IN p_EetwensId INT)
 BEGIN
-    SELECT 
-        g.Code AS GezinCode,
-        g.Naam AS GezinNaam,
+    SELECT
+        g.Naam AS Gezinsnaam,
+        g.Omschrijving,
+        g.AantalVolwassenen AS Volwassenen,
+        g.AantalKinderen AS Kinderen,
+        g.AantalBabys AS Babys,
+        CONCAT(p.Voornaam, ' ', IFNULL(p.Tussenvoegsel, ''), ' ', p.Achternaam) AS Vertegenwoordiger,
+        ew.Naam AS Eetwens,
+        vp.PakketNummer,
+        vp.Status AS PakketStatus
+    FROM Voedselpakket vp
+    INNER JOIN Gezin g ON vp.GezinId = g.Id
+    INNER JOIN Persoon p ON g.Id = p.GezinId AND p.IsVertegenwoordiger = 1
+    LEFT JOIN EetwensPerGezin epg ON g.Id = epg.GezinId
+    LEFT JOIN Eetwens ew ON epg.EetwensId = ew.Id
+    WHERE (p_EetwensId IS NULL OR p_EetwensId = 0 OR ew.Id = p_EetwensId)
+    GROUP BY
+        vp.Id,
+        g.Naam,
+        g.Omschrijving,
+        g.AantalVolwassenen,
+        g.AantalKinderen,
+        g.AantalBabys,
+        p.Voornaam,
+        p.Tussenvoegsel,
+        p.Achternaam,
+        ew.Naam,
+        vp.PakketNummer,
+        vp.Status
+    ORDER BY g.Naam ASC;
+END
+SQL);
+
+        DB::unprepared(<<<'SQL'
+CREATE PROCEDURE getPakketDetailsByGezin(IN p_GezinId INT)
+BEGIN
+    SELECT
+        g.Naam,
+        g.Omschrijving,
+        g.TotaalAantalPersonen,
         vp.PakketNummer,
         vp.DatumSamenstelling,
         vp.DatumUitgifte,
-        vp.Status AS PakketStatus,
-        COUNT(ppv.ProductId) AS AantalVerschillendeProducten,
-        IFNULL(SUM(ppv.AantalProductEenheden), 0) AS TotaalProductEenheden
-    FROM Voedselpakket vp
-    INNER JOIN Gezin g 
-        ON vp.GezinId = g.Id
-    LEFT JOIN ProductPerVoedselpakket ppv 
-        ON vp.Id = ppv.VoedselpakketId
-    LEFT JOIN Product pr 
-        ON ppv.ProductId = pr.Id
-    GROUP BY 
-        g.Id, 
-        vp.Id
-    ORDER BY 
-        vp.DatumSamenstelling DESC, 
-        g.Naam ASC;
+        vp.Status,
+        (
+            SELECT COUNT(*)
+            FROM ProductPerVoedselpakket ppv
+            WHERE ppv.VoedselpakketId = vp.Id
+        ) AS AantalProducten
+    FROM Gezin g
+    LEFT JOIN Voedselpakket vp ON g.Id = vp.GezinId
+    WHERE g.Id = p_GezinId
+    ORDER BY vp.DatumSamenstelling DESC;
+END
+SQL);
+
+        DB::unprepared(<<<'SQL'
+CREATE PROCEDURE updatePakketStatus(
+    IN p_PakketNummer INT,
+    IN p_NieuweStatus VARCHAR(50)
+)
+BEGIN
+    UPDATE Voedselpakket
+    SET Status = p_NieuweStatus
+    WHERE PakketNummer = p_PakketNummer;
 END
 SQL);
 
         DB::unprepared(<<<'SQL'
 CREATE PROCEDURE sp_getAllKlanten(IN p_Postcode VARCHAR(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci)
 BEGIN
-    SELECT 
+    SELECT
         G.Id AS KlantId,
         G.Naam AS 'Naam Gezin',
         CONCAT(
-            P.Voornaam, 
-            IF(P.Tussenvoegsel IS NOT NULL AND P.Tussenvoegsel <> '', CONCAT(' ', P.Tussenvoegsel), ''), 
-            ' ', 
+            P.Voornaam,
+            IF(P.Tussenvoegsel IS NOT NULL AND P.Tussenvoegsel <> '', CONCAT(' ', P.Tussenvoegsel), ''),
+            ' ',
             P.Achternaam
         ) AS 'Vertegenwoordiger',
         C.Email AS 'E-mailadres',
         C.Mobiel,
         CONCAT(
-            C.Straat, ' ', 
-            C.Huisnummer, 
+            C.Straat, ' ',
+            C.Huisnummer,
             IF(C.Toevoeging IS NOT NULL AND C.Toevoeging <> '', CONCAT(' ', C.Toevoeging), '')
         ) AS 'Adres',
         C.Woonplaats,
         C.Postcode
     FROM Gezin G
-    INNER JOIN Persoon P 
-        ON G.Id = P.GezinId 
+    INNER JOIN Persoon P
+        ON G.Id = P.GezinId
         AND P.IsVertegenwoordiger = 1
-    INNER JOIN ContactPerGezin CPG 
+    INNER JOIN ContactPerGezin CPG
         ON G.Id = CPG.GezinId
-    INNER JOIN Contact C 
+    INNER JOIN Contact C
         ON CPG.ContactId = C.Id
     WHERE G.IsActief = 1
     AND (p_Postcode IS NULL OR C.Postcode = p_Postcode)
@@ -140,12 +180,11 @@ END
 SQL);
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         DB::unprepared('DROP PROCEDURE IF EXISTS getAllPakketten');
+        DB::unprepared('DROP PROCEDURE IF EXISTS getPakketDetailsByGezin');
+        DB::unprepared('DROP PROCEDURE IF EXISTS updatePakketStatus');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_getAllKlanten');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_getKlantDetails');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_updateKlantContact');

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Support\Facades\DB;
-use PDO;
 
 class Pakket
 {
@@ -11,24 +10,14 @@ class Pakket
      * Haalt alle voedselpakketten op via de stored procedure.
      * We maken de functie static zodat Pakket::getAllPakketten() werkt.
      */
-    public static function getAllPakketten() 
+    public static function getAllPakketten($eetwensId = 0)
     {
-        // Haal de PDO connectie op vanuit de Laravel database verbinding
-        $pdo = DB::connection()->getPdo();
+        // We gebruiken de DB facade om de procedure aan te roepen met de parameter
+        return DB::select('CALL getAllPakketten(?)', [$eetwensId]);
+    }
 
-        // Bereid de aanroep voor
-        $sql = "CALL getAllPakketten()";
-        $query = $pdo->prepare($sql);
-
-        // Voer de query uit
-        $query->execute();
-
-        // Retourneer de resultaten als een array van objecten
-        $result = $query->fetchAll(PDO::FETCH_OBJ);
-
-        // Sluit de cursor
-        $query->closeCursor();
-
-        return $result;
+    public static function getPakketDetails($gezinId)
+    {
+        return DB::select('CALL getPakketDetailsByGezin(?)', [$gezinId]);
     }
 }

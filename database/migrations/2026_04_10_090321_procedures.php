@@ -229,9 +229,18 @@ SQL);
         DB::unprepared(<<<'SQL'
 CREATE PROCEDURE sp_getLeverancierTypes()
 BEGIN
-    SELECT DISTINCT LeverancierType
-    FROM Leverancier
-    WHERE IsActief = 1
+    SELECT LeverancierType
+    FROM (
+        SELECT DISTINCT LeverancierType
+        FROM Leverancier
+        WHERE IsActief = 1
+
+        UNION
+
+        SELECT 'Donor' AS LeverancierType
+    ) AS TypeLijst
+    WHERE LeverancierType IS NOT NULL
+      AND LeverancierType <> ''
     ORDER BY LeverancierType ASC;
 END
 SQL);
@@ -269,6 +278,7 @@ BEGIN
     SELECT
         p.Id AS ProductId,
         p.Naam,
+        p.SoortAllergie,
         p.Houdbaarheidsdatum,
         p.Barcode,
         p.Status,

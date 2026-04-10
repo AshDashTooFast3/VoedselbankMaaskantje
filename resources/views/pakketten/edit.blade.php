@@ -25,9 +25,6 @@
             background-color: #ffffff;
             width: 100%;
             max-width: 650px;
-            /* Breedte van de container zoals op de foto */
-            text-align: center;
-            /* Centreer de koptekst */
         }
 
         /* De groene onderstreepte koptekst */

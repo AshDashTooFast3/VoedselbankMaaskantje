@@ -10,7 +10,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        DB::unprepared('USE VoedselbankMaaskantje');
+
         DB::unprepared('DROP PROCEDURE IF EXISTS getAllPakketten');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_getAllKlanten');
 
         DB::unprepared(<<<'SQL'
 CREATE PROCEDURE getAllPakketten()
@@ -37,6 +40,27 @@ BEGIN
     ORDER BY 
         vp.DatumSamenstelling DESC, 
         g.Naam ASC;
+END
+SQL);
+
+        DB::unprepared(<<<'SQL'
+CREATE PROCEDURE sp_getAllKlanten()
+BEGIN
+    SELECT 
+        G.Naam AS 'Naam Gezin',
+        CONCAT(P.Voornaam, 
+               IF(P.Tussenvoegsel IS NOT NULL AND P.Tussenvoegsel <> '', CONCAT(' ', P.Tussenvoegsel), ''), 
+               ' ', P.Achternaam) AS 'Vertegenwoordiger',
+        C.Email AS 'E-mailadres',
+        C.Mobiel,
+        CONCAT(C.Straat, ' ', C.Huisnummer, IFNULL(C.Toevoeging, '')) AS 'Adres',
+        C.Woonplaats
+    FROM Gezin G
+    INNER JOIN Persoon P ON G.Id = P.GezinId AND P.IsVertegenwoordiger = 1
+    INNER JOIN ContactPerGezin CPG ON G.Id = CPG.GezinId
+    INNER JOIN Contact C ON CPG.ContactId = C.Id
+    WHERE G.IsActief = 1
+    ORDER BY G.Naam ASC;
 END
 SQL);
     }

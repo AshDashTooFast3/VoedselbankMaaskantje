@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PakkettenController;
+use App\Http\Controllers\KlantenController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,6 +20,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource('pakketten', PakkettenController::class);
+Route::resource('klanten', KlantenController::class);
 
 
 require __DIR__.'/auth.php';

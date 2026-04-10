@@ -13,7 +13,7 @@ BEGIN
         p.IsVertegenwoordiger,
         a.Naam AS Allergie,
         pa.AllergieId,
-        pa.PersoonId,
+        p.Id AS PersoonId,
         g.Naam AS GezinsNaam,
         g.Omschrijving,
         (SELECT COUNT(*) FROM Persoon WHERE GezinId = p_GezinId) AS TotaalPersonen

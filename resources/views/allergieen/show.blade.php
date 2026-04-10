@@ -54,10 +54,14 @@
                         <td>{{ $persoon->TypePersoon }}</td>
                         <td>{{ $persoon->Allergie ?? 'Geen' }}</td>
                         <td class="text-center">
-                            <a href="{{ route('allergie.edit', ['id' => $persoon->PersoonId, 'gezin_id' => $persoon->GezinId]) }}"
-                                class="text-primary fs-5">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
+                            @if(!empty($persoon->PersoonId))
+                                <a href="{{ route('allergie.edit', ['id' => $persoon->PersoonId, 'gezin_id' => $persoon->GezinId]) }}"
+                                    class="text-primary fs-5">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
                         </td>
                     </tr>
                 @empty

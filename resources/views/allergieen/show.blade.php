@@ -81,7 +81,7 @@
         </table>
 
         <div class="d-flex justify-content-end gap-2 mt-4">
-            <a href="{{ route('allergieen.index') }}" class="btn btn-sm btn-secondary">Terug</a>
+            <a href="{{ route('allergieen.index') }}" class="btn btn-sm btn-primary">Terug</a>
             <a href="{{ route('dashboard') }}" class="btn btn-sm btn-primary">Home</a>
         </div>
 

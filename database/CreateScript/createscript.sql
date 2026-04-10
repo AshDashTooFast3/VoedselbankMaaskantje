@@ -156,8 +156,8 @@ INSERT INTO Allergie (Id, Naam, Omschrijving, AnafylactischRisico) VALUES
 -- --------------------------------------------------------
 CREATE TABLE AllergiePerPersoon (
     Id INT PRIMARY KEY,
-    PersoonId INT NOT NULL,
-    AllergieId INT NOT NULL,
+    PersoonId INT NULL,
+    AllergieId INT NULL,
     IsActief BIT NOT NULL DEFAULT 1,
     Opmerking VARCHAR(255) NULL,
     DatumAangemaakt DATETIME(6) NOT NULL DEFAULT NOW(6),

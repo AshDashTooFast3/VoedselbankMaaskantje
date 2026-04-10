@@ -27,6 +27,17 @@
                 @endforeach
             </select>
 
+            @if (session('success'))
+                <div class="alert alert-info">
+                    {{ session('success') }}
+                    <meta http-equiv="refresh" content="3;url={{ route('allergie.show', $gezinId) }}">
+                </div>
+            @elseif (session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <div class="d-flex justify-content-between align-items-center">
                 <button type="submit" class="btn btn-lg btn-secondary">Wijzig Allergie</button>
                 <div class="d-flex gap-2">

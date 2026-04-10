@@ -152,6 +152,16 @@ class AllergieenController extends Controller
 
                 return redirect()->back()->with('error', 'Persoon niet gevonden.');
             }
+            $Risico = Allergie::where('Id', $allergieId)->value('AnafylactischRisico');
+
+            if ($Risico && $Risico === 'Hoog') {
+                Log::warning('Update gestopt: geselecteerde allergie heeft hoog anafylactisch risico.', [
+                    'persoon_id' => $persoonId,
+                    'allergie_id' => $allergieId,
+                ]);
+
+                return redirect()->back()->with('error', 'Voor het wijzigen van deze allergie wordt geadviseerd eerst een arts te raadplegen vanwege een hoog risico op een anafylactisch shock.');
+            }
 
             $this->AllergieModel->updateAllergy($persoonId, $allergieId, $gezinId);
 
@@ -161,7 +171,7 @@ class AllergieenController extends Controller
                 'gezin_id' => $gezinId,
             ]);
 
-            return redirect()->route('allergie.show', ['id' => $gezinId])->with('success', 'Allergie succesvol bijgewerkt.');
+            return redirect()->back()->with('success', 'De wijziging is doorgevoerd.');
         } catch (ValidationException $e) {
             Log::warning('Validatiefout bij bijwerken allergie.', [
                 'persoon_id' => (int) $id,

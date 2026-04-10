@@ -197,7 +197,7 @@ BEGIN
 END
 SQL);
 
-    // Leveranciers-procedures (US07 overzicht/details + US08 productdatum-wijziging).
+        // Leveranciers-procedures (US07 overzicht/details + US08 productdatum-wijziging).
         DB::unprepared(<<<'SQL'
 CREATE PROCEDURE sp_getAllLeveranciers(IN p_LeverancierType VARCHAR(50))
 BEGIN

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Pakket;
 
 class PakkettenController extends Controller
 {
@@ -11,7 +12,8 @@ class PakkettenController extends Controller
      */
     public function index()
     {
-        return view('pakketten.index');
+        $pakketten = Pakket::getAllPakketten();
+        return view('pakketten.index', compact('pakketten'));
     }
 
     /**

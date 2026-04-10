@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Allergie extends Model
 {
@@ -31,5 +32,15 @@ class Allergie extends Model
     public function allergiePerPersoon()
     {
         return $this->hasMany(AllergiePerPersoon::class, 'AllergieId');
+    }
+
+    public function getAllFamilies()
+    {
+        return DB::select('CALL GetAllFamilies()');
+    }
+
+    public function getAllFamiliesBySelectedAllergy($allergieId)
+    {
+        return DB::select('CALL GetAllFamiliesBySelectedAllergy(?)', [$allergieId]);
     }
 }

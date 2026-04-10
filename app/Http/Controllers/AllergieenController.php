@@ -3,9 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Allergie;
 
 class AllergieenController extends Controller
 {
+    private $AllergieModel;
+    public function __construct()
+    {
+        $this->AllergieModel = new Allergie();
+    }
     /**
      * Display a listing of the resource.
      */

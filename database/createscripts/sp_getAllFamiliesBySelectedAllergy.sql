@@ -5,7 +5,7 @@ DROP PROCEDURE IF EXISTS sp_getAllFamiliesBySelectedAllergy;
 DELIMITER $$
 
 CREATE PROCEDURE sp_getAllFamiliesBySelectedAllergy(
-    p_AllergieNaam VARCHAR(255)
+    p_AllergieId INT
 )
 BEGIN
     SELECT
@@ -20,11 +20,11 @@ BEGIN
     INNER JOIN Persoon p ON g.Id = p.GezinId
     INNER JOIN AllergiePerPersoon ap ON p.Id = ap.PersoonId
     INNER JOIN Allergie a ON ap.AllergieId = a.Id
-    WHERE a.Naam = p_AllergieNaam COLLATE utf8mb4_unicode_ci;
+    WHERE a.Id = p_AllergieId;
 END $$
 
 DELIMITER ;
 
-CALL sp_getAllFamiliesBySelectedAllergy('Pindas');
+CALL sp_getAllFamiliesBySelectedAllergy(1);
 
         

@@ -2,22 +2,49 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Allergie;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class AllergieenController extends Controller
 {
     private $AllergieModel;
+
     public function __construct()
     {
-        $this->AllergieModel = new Allergie();
+        $this->AllergieModel = new Allergie;
     }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function index($allergieId = null)
     {
-        return view ('allergieen.index');
+        $allergieId = request('allergie_id');
+        $allergieenselector = $this->AllergieModel->getAllAllergies();
+        $results = $allergieId
+            ? $this->AllergieModel->getAllFamiliesBySelectedAllergy($allergieId)
+            : $this->AllergieModel->getAllFamilies();
+
+        $page = request('page', 1);
+        $perPage = 4;
+        $allResults = collect($results);
+        $offset = ($page - 1) * $perPage;
+
+        $gezinnen = new LengthAwarePaginator(
+            $allResults->slice($offset, $perPage)->values(),
+            \count($results),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        return view('allergieen.index', [
+            'gezinnen' => $gezinnen,
+            'allergieenselector' => $allergieenselector,
+        ]);
+    }
+
+    public function show()
+    {
+        return view('allergieen.show');
     }
 
     /**
@@ -35,5 +62,4 @@ class AllergieenController extends Controller
     {
         //
     }
-
 }

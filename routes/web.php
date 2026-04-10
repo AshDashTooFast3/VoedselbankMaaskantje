@@ -21,7 +21,9 @@ Route::middleware('auth')->group(function () {
 
 Route::resource('pakketten', PakkettenController::class);
 
-Route::get('/allergieen', [AllergieenController::class, 'index'])->name('allergieen.index')
-->middleware('role:manager');
+Route::middleware('role:manager')->group(function () {
+    Route::get('/allergieen', [AllergieenController::class, 'index'])->name('allergieen.index');
+    Route::get('/allergieen/{id}', [AllergieenController::class, 'show'])->name('allergie.show');
+});
 
 require __DIR__.'/auth.php';

@@ -36,11 +36,16 @@ class Allergie extends Model
 
     public function getAllFamilies()
     {
-        return DB::select('CALL GetAllFamilies()');
+        return DB::select('CALL sp_getAllFamilies()');
     }
 
     public function getAllFamiliesBySelectedAllergy($allergieId)
     {
-        return DB::select('CALL GetAllFamiliesBySelectedAllergy(?)', [$allergieId]);
+        return DB::select('CALL sp_getAllFamiliesBySelectedAllergy(?)', [$allergieId]);
+    }
+
+    public function getAllAllergies() 
+    {
+        return DB::select('CALL sp_getAllAllergies()');
     }
 }

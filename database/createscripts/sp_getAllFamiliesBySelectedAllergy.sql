@@ -10,6 +10,7 @@ CREATE PROCEDURE sp_getAllFamiliesBySelectedAllergy(
 BEGIN
     SELECT
         g.Id,
+        a.Id AS AllergieId,
         g.Naam,
         g.Omschrijving,
         g.AantalVolwassenen,

@@ -8,6 +8,7 @@ CREATE PROCEDURE sp_getAllFamilies()
 BEGIN
     SELECT
         g.Id,
+        a.Id AS AllergieId,
         g.Naam,
         g.Omschrijving,
         g.AantalVolwassenen,
@@ -15,7 +16,9 @@ BEGIN
         g.AantalBabys,
         p.IsVertegenwoordiger
     FROM Gezin g
-    INNER JOIN Persoon p ON g.Id = p.GezinId;
+    INNER JOIN Persoon p ON g.Id = p.GezinId
+    INNER JOIN AllergiePerPersoon ap ON p.Id = ap.PersoonId
+    INNER JOIN Allergie a ON ap.AllergieId = a.Id;
 END $$
 
 CALL sp_getAllFamilies();

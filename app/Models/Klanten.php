@@ -33,8 +33,13 @@ class Klanten extends Model
     {
         DB::statement('CALL sp_updateKlantContact(?, ?, ?, ?, ?, ?, ?, ?)', [
             $id,
-            $data['Straatnaam'], $data['Huisnummer'], $data['Toevoeging'],
-            $data['Postcode'], $data['Woonplaats'], $data['Email'], $data['Mobiel']
+            $data['Straatnaam'] ?? '',
+            $data['Huisnummer'] ?? '',
+            $data['Toevoeging'] ?? null,
+            $data['Postcode'] ?? '',
+            $data['Woonplaats'] ?? '',
+            $data['Email'] ?? '',
+            $data['Mobiel'] ?? ''
         ]);
     }
 }

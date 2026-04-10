@@ -53,7 +53,7 @@
                     <td>{{ $klant->Adres }}</td>
                     <td>{{ $klant->Woonplaats }}</td>
                     <td>
-                        <a href="#" class="details-btn">📄</a> 
+                        <a href="{{ route('klanten.show', $klant->GezinId) }}" class="details-btn" style="font-size: 20px; text-decoration: none;">📄</a> 
                     </td>
                 </tr>
                 @endforeach

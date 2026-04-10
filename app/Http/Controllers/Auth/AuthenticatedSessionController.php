@@ -31,9 +31,6 @@ class AuthenticatedSessionController extends Controller
         $role = strtolower($request->user()->rolename ?? '');
 
         return redirect()->intended(match($role) {
-            'manager' => route('manager.index'),
-            'medewerker' => route('medewerker.index'),
-            'vrijwilliger' => route('vrijwilliger.index'),
             default => route('welcome'),
         });
     }

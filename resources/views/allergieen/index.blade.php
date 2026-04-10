@@ -57,7 +57,7 @@
                     </tr>
                 @empty
                     <tr class="my-3">
-                        <td colspan="7" class="text-center bg-warning bg-opacity-25 text-dark p-3">Geen gezinnen gevonden
+                        <td colspan="7" class="text-center bg-warning bg-opacity-25 text-dark p-3">Er zijn geen gezinnen bekent die de geselecteerde allergie hebben.
                         </td>
                     </tr>
                 @endforelse

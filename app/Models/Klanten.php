@@ -13,9 +13,13 @@ class Klanten extends Model
     /**
      * Haal het klantenoverzicht op via de Stored Procedure.
      */
-    public static function getKlantenOverzicht()
+    public static function getKlantenOverzicht($postcode = null)
     {
-        // We gebruiken DB::select om de procedure aan te roepen
-        return DB::select('CALL sp_getAllKlanten()');
+        return DB::select('CALL sp_getAllKlanten(?)', [$postcode]);
+    }
+
+    public static function getUniquePostcodes()
+    {
+        return DB::table('Contact')->distinct()->pluck('Postcode');
     }
 }

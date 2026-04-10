@@ -10,13 +10,14 @@ class KlantenController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Roep de SP aan via het model
-        $klanten = Klanten::getKlantenOverzicht();
+        $selectedPostcode = $request->input('postcode'); // Haal postcode uit de URL/Form
+        
+        $klanten = Klanten::getKlantenOverzicht($selectedPostcode);
+        $postcodes = Klanten::getUniquePostcodes();
 
-        // Stuur de data naar de view (bijv. resources/views/klanten/index.blade.php)
-        return view('klanten.index', compact('klanten'));
+        return view('klanten.index', compact('klanten', 'postcodes', 'selectedPostcode'));
     }
 
     /**

@@ -11,15 +11,17 @@ use Throwable;
 
 class AllergieenController extends Controller
 {
-        // Instantie van het Allergie model voor databaseoperaties
-        private $AllergieModel;
+    // Instantie van het Allergie model voor databaseoperaties
+    private $AllergieModel;
 
-        /**
-         * Constructor: Initialiseer het Allergie model
-         */
-        public function __construct()
-        {
-            // Maak een nieuwe instantie van het Allergie model aan
+    /**
+     * Constructor: Initialiseer het Allergie model
+     */
+    public function __construct()
+    {
+        // Maak een nieuwe instantie van het Allergie model aan
+        $this->AllergieModel = new Allergie;
+    }
 
     /**
      * Toon overzicht van gezinnen met allergiën (met optionele allergie-filter)
@@ -29,10 +31,10 @@ class AllergieenController extends Controller
         try {
             // Haal allergie filter op uit query parameters
             $allergieId = request('allergie_id');
-            
+
             // Haal alle beschikbare allergiën op voor de dropdown selector
             $allergieenselector = $this->AllergieModel->getAllAllergies();
-            
+
             // Haal gezinnen op: gefilterd op allergie of alle gezinnen
             $results = $allergieId
                 ? $this->AllergieModel->getAllFamiliesBySelectedAllergy($allergieId)
@@ -41,10 +43,10 @@ class AllergieenController extends Controller
             // Handmatige paginatie: stored procedures geven alle resultaten terug, Laravel kan dit niet automatisch
             $page = request('page', 1);
             $perPage = 4;
-            
+
             // Zet resultaten in een Laravel collection voor makkelijkere manipulatie
             $allResults = collect($results);
-            
+
             // Bereken offset voor huidige pagina (bijv. pagina 2 = skip 4 items)
             $offset = ($page - 1) * $perPage;
 
@@ -125,7 +127,7 @@ class AllergieenController extends Controller
 
             // Haal persoongegevens op
             $Persoon = $this->AllergieModel->getAllergyById($persoonId);
-            
+
             // Haal alle allergiën op voor de dropdown in het formulier
             $allergies = $this->AllergieModel->getAllAllergies();
 
@@ -168,31 +170,35 @@ class AllergieenController extends Controller
             // Extract en cast de gevalideerde data
             $gezinId = (int) $validatedData['gezin_id'];
             $allergieId = (int) $validatedData['allergie_id'];
-            
+
             // Haal persoongegevens op om te verifiëren dat persoon bestaat
             $persoon = $this->AllergieModel->getAllergyById($persoonId);
 
             // VALIDATIE: Controleer of persoon ID geldig is
             if (! $persoonId) {
                 Log::warning('Update gestopt: persoon ID ontbreekt.', ['persoon_id' => $persoonId]);
+
                 return redirect()->back()->with('error', 'Persoon niet gevonden.');
             }
-            
+
             // VALIDATIE: Controleer of allergie ID geldig is
             if (! $allergieId) {
                 Log::warning('Update gestopt: allergie ID ontbreekt.', ['persoon_id' => $persoonId]);
+
                 return redirect()->back()->with('error', 'Allergie niet geselecteerd.');
             }
-            
+
             // VALIDATIE: Controleer of gezin ID geldig is
             if (! $gezinId) {
                 Log::warning('Update gestopt: gezin ID ontbreekt.', ['persoon_id' => $persoonId]);
+
                 return redirect()->back()->with('error', 'Gezin niet gevonden.');
             }
-            
+
             // VALIDATIE: Verifieer dat persoon daadwerkelijk in database bestaat
             if (empty($persoon)) {
                 Log::warning('Update gestopt: persoon niet gevonden in database.', ['persoon_id' => $persoonId]);
+
                 return redirect()->back()->with('error', 'Persoon niet gevonden.');
             }
             // Haal het anafylactische risico niveau op voor deze allergie

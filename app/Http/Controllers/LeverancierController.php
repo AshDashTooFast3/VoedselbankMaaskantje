@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use App\Models\Leverancier;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -104,6 +105,91 @@ class LeverancierController extends Controller
             ]);
 
             return redirect()->back()->withInput()->with('error', 'Opslaan is mislukt. Probeer het opnieuw.');
+        }
+    }
+
+    public function editProduct(int $leverancierId, int $productId): View|RedirectResponse
+    {
+        try {
+            $product = Leverancier::getLeverancierProductVoorWijzigen($leverancierId, $productId);
+
+            if (!$product) {
+                return redirect()
+                    ->route('leveranciers.show', $leverancierId)
+                    ->with('error', 'Product niet gevonden.');
+            }
+
+            return view('leveranciers.edit-product', [
+                'leverancierId' => $leverancierId,
+                'product' => $product,
+            ]);
+        } catch (QueryException $exception) {
+            Log::error('Databasefout bij openen wijzig product pagina.', [
+                'leverancier_id' => $leverancierId,
+                'product_id' => $productId,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return redirect()
+                ->route('leveranciers.show', $leverancierId)
+                ->with('error', 'Wijzig product pagina kon niet worden geladen.');
+        }
+    }
+
+    public function updateProduct(Request $request, int $leverancierId, int $productId): RedirectResponse
+    {
+        $validated = $request->validate([
+            'Houdbaarheidsdatum' => ['required', 'date'],
+        ]);
+
+        try {
+            $product = Leverancier::getLeverancierProductVoorWijzigen($leverancierId, $productId);
+
+            if (!$product) {
+                return redirect()
+                    ->route('leveranciers.show', $leverancierId)
+                    ->with('error', 'Product niet gevonden.');
+            }
+
+            $huidigeDatum = Carbon::parse($product->Houdbaarheidsdatum);
+            $nieuweDatum = Carbon::parse($validated['Houdbaarheidsdatum']);
+
+            if ($nieuweDatum->gt($huidigeDatum->copy()->addDays(7))) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with('error', 'De houdbaarheidsdatum is niet gewijzigd')
+                    ->withErrors([
+                        'Houdbaarheidsdatum' => 'De houdbaarheidsdatum mag met maximaal 7 dagen worden verlengd',
+                    ]);
+            }
+
+            $result = Leverancier::updateProductHoudbaarheidsdatum($leverancierId, $productId, $validated['Houdbaarheidsdatum']);
+
+            if (($result->IsGewijzigd ?? 0) === 1) {
+                return redirect()
+                    ->back()
+                    ->with('success', 'De houdbaarheidsdatum is gewijzigd');
+            }
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'De houdbaarheidsdatum is niet gewijzigd')
+                ->withErrors([
+                    'Houdbaarheidsdatum' => $result->Bericht ?? 'De houdbaarheidsdatum mag met maximaal 7 dagen worden verlengd',
+                ]);
+        } catch (QueryException $exception) {
+            Log::error('Databasefout bij wijzigen houdbaarheidsdatum.', [
+                'leverancier_id' => $leverancierId,
+                'product_id' => $productId,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'De houdbaarheidsdatum is niet gewijzigd');
         }
     }
 }

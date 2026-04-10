@@ -11,6 +11,8 @@ return new class extends Migration
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_getLeverancierTypes');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_getLeverancierDetails');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_getLeverancierProducten');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_getLeverancierProductVoorWijzigen');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_updateProductHoudbaarheidsdatum');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_updateLeverancier');
 
         DB::unprepared(<<<'SQL'
@@ -76,7 +78,9 @@ SQL);
 CREATE PROCEDURE sp_getLeverancierProducten(IN p_LeverancierId INT)
 BEGIN
     SELECT
+        p.Id AS ProductId,
         p.Naam,
+        p.Houdbaarheidsdatum,
         p.Barcode,
         p.Status,
         ppl.DatumAangeleverd,
@@ -86,6 +90,58 @@ BEGIN
         ON p.Id = ppl.ProductId
     WHERE ppl.LeverancierId = p_LeverancierId
     ORDER BY p.Naam ASC;
+END
+SQL);
+
+        DB::unprepared(<<<'SQL'
+CREATE PROCEDURE sp_getLeverancierProductVoorWijzigen(
+    IN p_LeverancierId INT,
+    IN p_ProductId INT
+)
+BEGIN
+    SELECT
+        p.Id AS ProductId,
+        p.Naam,
+        p.Houdbaarheidsdatum
+    FROM ProductPerLeverancier ppl
+    INNER JOIN Product p
+        ON p.Id = ppl.ProductId
+    WHERE ppl.LeverancierId = p_LeverancierId
+      AND p.Id = p_ProductId
+    LIMIT 1;
+END
+SQL);
+
+        DB::unprepared(<<<'SQL'
+CREATE PROCEDURE sp_updateProductHoudbaarheidsdatum(
+    IN p_LeverancierId INT,
+    IN p_ProductId INT,
+    IN p_NieuweHoudbaarheidsdatum DATE
+)
+BEGIN
+    DECLARE v_HuidigeDatum DATE;
+
+    SELECT p.Houdbaarheidsdatum
+    INTO v_HuidigeDatum
+    FROM ProductPerLeverancier ppl
+    INNER JOIN Product p
+        ON p.Id = ppl.ProductId
+    WHERE ppl.LeverancierId = p_LeverancierId
+      AND p.Id = p_ProductId
+    LIMIT 1;
+
+    IF v_HuidigeDatum IS NULL THEN
+        SELECT 0 AS IsGewijzigd, 'Product niet gevonden' AS Bericht;
+    ELSEIF p_NieuweHoudbaarheidsdatum > DATE_ADD(v_HuidigeDatum, INTERVAL 7 DAY) THEN
+        SELECT 0 AS IsGewijzigd, 'De houdbaarheidsdatum mag met maximaal 7 dagen worden verlengd' AS Bericht;
+    ELSE
+        UPDATE Product
+        SET Houdbaarheidsdatum = p_NieuweHoudbaarheidsdatum,
+            DatumGewijzigd = NOW(6)
+        WHERE Id = p_ProductId;
+
+        SELECT 1 AS IsGewijzigd, 'De houdbaarheidsdatum is gewijzigd' AS Bericht;
+    END IF;
 END
 SQL);
 
@@ -132,6 +188,8 @@ SQL);
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_getLeverancierTypes');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_getLeverancierDetails');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_getLeverancierProducten');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_getLeverancierProductVoorWijzigen');
+        DB::unprepared('DROP PROCEDURE IF EXISTS sp_updateProductHoudbaarheidsdatum');
         DB::unprepared('DROP PROCEDURE IF EXISTS sp_updateLeverancier');
     }
 };

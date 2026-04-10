@@ -45,6 +45,26 @@ class Leverancier
     }
 
     /**
+     * Haalt een specifiek product van een leverancier op voor de wijzigpagina.
+     */
+    public static function getLeverancierProductVoorWijzigen(int $leverancierId, int $productId): ?object
+    {
+        return collect(DB::select('CALL sp_getLeverancierProductVoorWijzigen(?, ?)', [$leverancierId, $productId]))->first();
+    }
+
+    /**
+     * Werkt de houdbaarheidsdatum bij via stored procedure.
+     */
+    public static function updateProductHoudbaarheidsdatum(int $leverancierId, int $productId, string $nieuweDatum): ?object
+    {
+        return collect(DB::select('CALL sp_updateProductHoudbaarheidsdatum(?, ?, ?)', [
+            $leverancierId,
+            $productId,
+            $nieuweDatum,
+        ]))->first();
+    }
+
+    /**
      * Werkt leverancier en contactgegevens bij via stored procedure.
      */
     public static function updateLeverancier(int $leverancierId, array $data): void

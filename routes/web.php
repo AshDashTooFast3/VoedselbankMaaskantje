@@ -33,6 +33,17 @@ Route::middleware('auth')->group(function () {
     Route::put('/leveranciers/{id}', [LeverancierController::class, 'update'])->whereNumber('id')->name('leveranciers.update');
 });
 
+Route::middleware(['auth', 'role:manager'])->group(function () {
+    Route::get('/leveranciers/{leverancierId}/producten/{productId}/edit', [LeverancierController::class, 'editProduct'])
+        ->whereNumber('leverancierId')
+        ->whereNumber('productId')
+        ->name('leveranciers.producten.edit');
+    Route::put('/leveranciers/{leverancierId}/producten/{productId}', [LeverancierController::class, 'updateProduct'])
+        ->whereNumber('leverancierId')
+        ->whereNumber('productId')
+        ->name('leveranciers.producten.update');
+});
+
 Route::middleware('role:manager')->group(function () {
     Route::get('/allergieen', [AllergieenController::class, 'index'])->name('allergieen.index');
     Route::get('/allergieen/{id}', [AllergieenController::class, 'show'])->name('allergie.show');

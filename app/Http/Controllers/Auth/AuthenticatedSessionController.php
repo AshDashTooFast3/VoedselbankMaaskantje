@@ -31,7 +31,7 @@ class AuthenticatedSessionController extends Controller
         $role = strtolower($request->user()->rolename ?? '');
 
         return redirect()->intended(match($role) {
-            default => route('dashboard'),
+            default => route('welcome'),
         });
     }
 

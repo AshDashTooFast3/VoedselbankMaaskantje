@@ -9,16 +9,21 @@ class Leverancier
 {
     /**
      * Haalt leveranciers op via stored procedure, optioneel gefilterd op type.
+     *
+     * Waarom procedure:
+     * - querylogica blijft centraal in de database
+     * - controller blijft dun en gericht op HTTP-flow
      */
     public static function getLeveranciersOverzicht(?string $leverancierType = null): Collection
     {
+        // Lege string vertalen we naar null, zodat de procedure "geen filter" toepast.
         $typeFilter = $leverancierType ?: null;
 
         return collect(DB::select('CALL sp_getAllLeveranciers(?)', [$typeFilter]));
     }
 
     /**
-     * Haalt unieke leveranciertypes op voor de filter.
+     * Haalt unieke leveranciertypes op voor de filter-dropdown.
      */
     public static function getLeverancierTypes(): Collection
     {
@@ -31,6 +36,10 @@ class Leverancier
     /**
      * Haalt details en producten van een leverancier op via stored procedures.
      *
+        * Return-structuur:
+        * - leverancier: object met leverancier/contactgegevens
+        * - producten: collectie met producten van die leverancier
+        *
      * @return array<string, mixed>
      */
     public static function getLeverancierDetails(int $leverancierId): array
@@ -46,6 +55,7 @@ class Leverancier
 
     /**
      * Haalt een specifiek product van een leverancier op voor de wijzigpagina.
+     * Hiermee voorkomen we dat een gebruiker een product van een andere leverancier wijzigt.
      */
     public static function getLeverancierProductVoorWijzigen(int $leverancierId, int $productId): ?object
     {
@@ -54,6 +64,7 @@ class Leverancier
 
     /**
      * Werkt de houdbaarheidsdatum bij via stored procedure.
+     * Procedure retourneert statusinformatie (IsGewijzigd/Bericht) voor gebruikersfeedback.
      */
     public static function updateProductHoudbaarheidsdatum(int $leverancierId, int $productId, string $nieuweDatum): ?object
     {
@@ -65,7 +76,8 @@ class Leverancier
     }
 
     /**
-     * Werkt leverancier en contactgegevens bij via stored procedure.
+        * Werkt leverancier en contactgegevens bij via stored procedure.
+        * Deze methode heeft geen return: errors worden als DB-exceptie naar controller doorgegeven.
      */
     public static function updateLeverancier(int $leverancierId, array $data): void
     {

@@ -12,6 +12,15 @@ use Illuminate\View\View;
 
 class LeverancierController extends Controller
 {
+    /**
+     * Toont het leveranciersoverzicht met optionele filter op leverancierstype.
+     *
+     * Flow:
+     * 1) Lees filter uit querystring
+     * 2) Haal data op via model/stored procedures
+     * 3) Log functionele metadata voor troubleshooting
+     * 4) Toon overzichtspagina
+     */
     public function index(Request $request): View|RedirectResponse
     {
         try {
@@ -34,11 +43,15 @@ class LeverancierController extends Controller
         }
     }
 
+    /**
+     * Toont details van 1 leverancier inclusief bijbehorende producten.
+     */
     public function show(int $id): View|RedirectResponse
     {
         try {
             $details = Leverancier::getLeverancierDetails($id);
 
+            // Als de procedure geen leverancier teruggeeft, sturen we de gebruiker netjes terug.
             if (!$details['leverancier']) {
                 return redirect()->route('leveranciers.index')->with('error', 'Leverancier niet gevonden.');
             }
@@ -59,6 +72,9 @@ class LeverancierController extends Controller
         }
     }
 
+    /**
+     * Toont de leverancier-wijzigpagina (naam, contactpersoon, etc.).
+     */
     public function edit(int $id): View|RedirectResponse
     {
         try {
@@ -81,6 +97,11 @@ class LeverancierController extends Controller
         }
     }
 
+    /**
+     * Slaat wijzigingen aan leveranciergegevens op.
+     *
+     * Let op: validatie gebeurt server-side; client-side validatie is slechts ondersteunend.
+     */
     public function update(Request $request, int $id): RedirectResponse
     {
         $validated = $request->validate([
@@ -108,6 +129,13 @@ class LeverancierController extends Controller
         }
     }
 
+    /**
+     * Toont de pagina waar de houdbaarheidsdatum van één product aangepast kan worden.
+     *
+     * Context:
+     * - leverancierId en productId samen bepalen welk product aangepast wordt
+     * - alleen managers krijgen toegang via route-middleware
+     */
     public function editProduct(int $leverancierId, int $productId): View|RedirectResponse
     {
         try {
@@ -136,6 +164,13 @@ class LeverancierController extends Controller
         }
     }
 
+    /**
+     * Verwerkt de wijziging van de houdbaarheidsdatum.
+     *
+     * Businessregel (US08):
+     * - de nieuwe datum mag maximaal 7 dagen later zijn dan de huidige datum
+     * - bij overtreding tonen we expliciete foutmelding
+     */
     public function updateProduct(Request $request, int $leverancierId, int $productId): RedirectResponse
     {
         $validated = $request->validate([
@@ -151,6 +186,7 @@ class LeverancierController extends Controller
                     ->with('error', 'Product niet gevonden.');
             }
 
+            // We vergelijken op datum-niveau om de 7-dagenregel exact af te dwingen.
             $huidigeDatum = Carbon::parse($product->Houdbaarheidsdatum);
             $nieuweDatum = Carbon::parse($validated['Houdbaarheidsdatum']);
 
@@ -164,6 +200,7 @@ class LeverancierController extends Controller
                     ]);
             }
 
+                    // DB-procedure retourneert IsGewijzigd + Bericht; controller vertaalt dit naar UX-feedback.
             $result = Leverancier::updateProductHoudbaarheidsdatum($leverancierId, $productId, $validated['Houdbaarheidsdatum']);
 
             if (($result->IsGewijzigd ?? 0) === 1) {

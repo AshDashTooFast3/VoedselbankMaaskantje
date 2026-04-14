@@ -24,5 +24,11 @@ class DatabaseSeeder extends Seeder
                 'rolename' => 'manager',
             ]
         );
+        User::create([
+            'email' => 'klant@maaskantje.nl',
+            'name' => 'klant User',
+            'password' => Hash::make('achraf123'),
+            'rolename' => 'klant',
+        ]);
     }
 }

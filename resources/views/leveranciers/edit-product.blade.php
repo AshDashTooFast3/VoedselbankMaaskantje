@@ -45,7 +45,7 @@
 
             {{-- Extra fouttekst onder het veld voor gerichte validatiefeedback --}}
             @error('Houdbaarheidsdatum')
-                <p class="text-danger fs-3 mb-4" style="font-size: 2rem;">{{ $message }}</p>
+                <p class="text-danger mb-4">{{ $message }}</p>
             @enderror
 
             <div class="d-flex justify-content-between align-items-center mt-4">

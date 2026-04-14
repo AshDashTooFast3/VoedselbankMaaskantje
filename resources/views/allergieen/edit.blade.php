@@ -32,9 +32,15 @@
                     {{ session('success') }}
                     <meta http-equiv="refresh" content="3;url={{ route('allergie.show', $gezinId) }}">
                 </div>
+            @elseif (session('warning'))
+                <div class="alert alert-warning">
+                    {{ session('warning') }}
+                    <meta http-equiv="refresh" content="5;url={{ route('allergie.show', $gezinId) }}">
+                </div>
             @elseif (session('error'))
                 <div class="alert alert-danger">
                     {{ session('error') }}
+                    <meta http-equiv="refresh" content="3;url={{ route('allergie.show', $gezinId) }}">
                 </div>
             @endif
 

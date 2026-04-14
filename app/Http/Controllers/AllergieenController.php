@@ -212,7 +212,7 @@ class AllergieenController extends Controller
                 ]);
 
                 // Waarschuw gebruiker en stop update
-                return redirect()->back()->with('error', 'Voor het wijzigen van deze allergie wordt geadviseerd eerst een arts te raadplegen vanwege een hoog risico op een anafylactisch shock.');
+                return redirect()->back()->with('warning', 'Voor het wijzigen van deze allergie wordt geadviseerd eerst een arts te raadplegen vanwege een hoog risico op een anafylactisch shock.');
             }
 
             // Voer de allergie update uit in de database

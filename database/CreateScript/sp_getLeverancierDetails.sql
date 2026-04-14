@@ -38,6 +38,7 @@ BEGIN
     SELECT
         p.Id AS ProductId,
         p.Naam,
+        p.SoortAllergie,
         p.Houdbaarheidsdatum,
         p.Barcode,
         p.Status,

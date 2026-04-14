@@ -6,7 +6,7 @@ USE VoedselbankMaaskantje;
 -- 1. Gezin
 -- --------------------------------------------------------
 CREATE TABLE Gezin (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Naam VARCHAR(255) NOT NULL,
     Code VARCHAR(50) NOT NULL,
     Omschrijving VARCHAR(255),
@@ -32,7 +32,7 @@ INSERT INTO Gezin (Id, Naam, Code, Omschrijving, AantalVolwassenen, AantalKinder
 -- 2. Persoon
 -- --------------------------------------------------------
 CREATE TABLE Persoon (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     GezinId INT NOT NULL,
     Voornaam VARCHAR(100) NOT NULL,
     Tussenvoegsel VARCHAR(50) NULL,
@@ -72,7 +72,7 @@ INSERT INTO Persoon (Id, GezinId, Voornaam, Tussenvoegsel, Achternaam, Geboorted
 -- 3. Gebruiker
 -- --------------------------------------------------------
 CREATE TABLE Gebruiker (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     PersoonId INT NOT NULL,
     InlogNaam VARCHAR(100) NOT NULL,
     Gebruikersnaam VARCHAR(100) NOT NULL,
@@ -96,7 +96,7 @@ INSERT INTO Gebruiker (Id, PersoonId, InlogNaam, Gebruikersnaam, Wachtwoord, IsI
 -- 4. Rol
 -- --------------------------------------------------------
 CREATE TABLE Rol (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Naam VARCHAR(100) NOT NULL,
     IsActief BIT NOT NULL DEFAULT 1,
     Opmerking VARCHAR(255) NULL,
@@ -113,7 +113,7 @@ INSERT INTO Rol (Id, Naam) VALUES
 -- 5. RolPerGebruiker
 -- --------------------------------------------------------
 CREATE TABLE RolPerGebruiker (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     GebruikerId INT NOT NULL,
     RolId INT NOT NULL,
     IsActief BIT NOT NULL DEFAULT 1,
@@ -133,7 +133,7 @@ INSERT INTO RolPerGebruiker (Id, GebruikerId, RolId) VALUES
 -- 6. Allergie
 -- --------------------------------------------------------
 CREATE TABLE Allergie (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Naam VARCHAR(100) NOT NULL,
     Omschrijving VARCHAR(255),
     AnafylactischRisico VARCHAR(50),
@@ -155,7 +155,7 @@ INSERT INTO Allergie (Id, Naam, Omschrijving, AnafylactischRisico) VALUES
 -- 7. AllergiePerPersoon
 -- --------------------------------------------------------
 CREATE TABLE AllergiePerPersoon (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     PersoonId INT NULL,
     AllergieId INT NULL,
     IsActief BIT NOT NULL DEFAULT 1,
@@ -188,7 +188,7 @@ INSERT INTO AllergiePerPersoon (Id, PersoonId, AllergieId) VALUES
 -- 8. Categorie
 -- --------------------------------------------------------
 CREATE TABLE Categorie (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Naam VARCHAR(100) NOT NULL,
     Omschrijving VARCHAR(255),
     IsActief BIT NOT NULL DEFAULT 1,
@@ -212,7 +212,7 @@ INSERT INTO Categorie (Id, Naam, Omschrijving) VALUES
 -- 9. Product
 -- --------------------------------------------------------
 CREATE TABLE Product (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     CategorieId INT NOT NULL,
     Naam VARCHAR(100) NOT NULL,
     SoortAllergie VARCHAR(100) NULL,
@@ -262,7 +262,7 @@ INSERT INTO Product (Id, CategorieId, Naam, SoortAllergie, Barcode, Houdbaarheid
 -- 10. Eetwens
 -- --------------------------------------------------------
 CREATE TABLE Eetwens (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Naam VARCHAR(100) NOT NULL,
     Omschrijving VARCHAR(255),
     IsActief BIT NOT NULL DEFAULT 1,
@@ -281,7 +281,7 @@ INSERT INTO Eetwens (Id, Naam, Omschrijving) VALUES
 -- 11. EetwensPerGezin
 -- --------------------------------------------------------
 CREATE TABLE EetwensPerGezin (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     GezinId INT NOT NULL,
     EetwensId INT NOT NULL,
     IsActief BIT NOT NULL DEFAULT 1,
@@ -303,7 +303,7 @@ INSERT INTO EetwensPerGezin (Id, GezinId, EetwensId) VALUES
 -- 12. Contact
 -- --------------------------------------------------------
 CREATE TABLE Contact (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Straat VARCHAR(150) NOT NULL,
     Huisnummer INT NOT NULL,
     Toevoeging VARCHAR(50) NULL,
@@ -336,7 +336,7 @@ INSERT INTO Contact (Id, Straat, Huisnummer, Toevoeging, Postcode, Woonplaats, E
 -- 13. ContactPerGezin
 -- --------------------------------------------------------
 CREATE TABLE ContactPerGezin (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     GezinId INT NOT NULL,
     ContactId INT NOT NULL,
     IsActief BIT NOT NULL DEFAULT 1,
@@ -359,7 +359,7 @@ INSERT INTO ContactPerGezin (Id, GezinId, ContactId) VALUES
 -- 14. Leverancier
 -- --------------------------------------------------------
 CREATE TABLE Leverancier (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Naam VARCHAR(150) NOT NULL,
     Contactpersoon VARCHAR(150),
     LeverancierNummer VARCHAR(50),
@@ -383,7 +383,7 @@ INSERT INTO Leverancier (Id, Naam, Contactpersoon, LeverancierNummer, Leverancie
 -- 15. ContactPerLeverancier
 -- --------------------------------------------------------
 CREATE TABLE ContactPerLeverancier (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     LeverancierId INT NOT NULL,
     ContactId INT NOT NULL,
     IsActief BIT NOT NULL DEFAULT 1,
@@ -407,7 +407,7 @@ INSERT INTO ContactPerLeverancier (Id, LeverancierId, ContactId) VALUES
 -- 16. Magazijn
 -- --------------------------------------------------------
 CREATE TABLE Magazijn (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Ontvangstdatum DATE,
     Uitleveringsdatum DATE NULL,
     Verpakkingseenheid VARCHAR(50),
@@ -453,7 +453,7 @@ INSERT INTO Magazijn (Id, Ontvangstdatum, Uitleveringsdatum, Verpakkingseenheid,
 -- 17. ProductPerMagazijn
 -- --------------------------------------------------------
 CREATE TABLE ProductPerMagazijn (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     ProductId INT NOT NULL,
     MagazijnId INT NOT NULL,
     Locatie VARCHAR(150),
@@ -500,7 +500,7 @@ INSERT INTO ProductPerMagazijn (Id, ProductId, MagazijnId, Locatie) VALUES
 -- 18. ProductPerLeverancier
 -- --------------------------------------------------------
 CREATE TABLE ProductPerLeverancier (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     LeverancierId INT NOT NULL,
     ProductId INT NOT NULL,
     DatumAangeleverd DATE,
@@ -548,7 +548,7 @@ INSERT INTO ProductPerLeverancier (Id, LeverancierId, ProductId, DatumAangelever
 -- 19. Voedselpakket
 -- --------------------------------------------------------
 CREATE TABLE Voedselpakket (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     GezinId INT NOT NULL,
     PakketNummer INT NOT NULL,
     DatumSamenstelling DATE,
@@ -573,7 +573,7 @@ INSERT INTO Voedselpakket (Id, GezinId, PakketNummer, DatumSamenstelling, DatumU
 -- 20. ProductPerVoedselpakket
 -- --------------------------------------------------------
 CREATE TABLE ProductPerVoedselpakket (
-    Id INT PRIMARY KEY,
+    Id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     VoedselpakketId INT NOT NULL,
     ProductId INT NOT NULL,
     AantalProductEenheden INT,
